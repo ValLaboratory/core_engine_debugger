@@ -44,7 +44,7 @@ if [[ "${TARGET_TYPE}" =~ ^(fiexd|all)$ ]] ; then
     unzip ${PJ_ROOT_DIR}/.expcache/tmp/${DATA_ZIP} -d ${PJ_ROOT_DIR}/.expcache/tmp/
 
     # 各種ファイルを指定のディレクトリへ展開
-    mkdir -p ${PJ_ROOT_DIR}/.expcache/${LOACL_EXTRACTION_DIR}/{knb,dia,jpcom/no_e4}
+    mkdir -p ${PJ_ROOT_DIR}/.expcache/${LOCAL_EXTRACTION_DIR}/{knb,dia,jpcom/no_e4}
     cp -rf ${PJ_ROOT_DIR}/.expcache/tmp/product/intra/knb ${PJ_ROOT_DIR}/.expcache/${LOCAL_EXTRACTION_DIR}/
     cp -rf ${PJ_ROOT_DIR}/.expcache/tmp/product/dia ${PJ_ROOT_DIR}/.expcache/${LOCAL_EXTRACTION_DIR}/
     cp -rf ${PJ_ROOT_DIR}/.expcache/tmp/product/jpcom ${PJ_ROOT_DIR}/.expcache/${LOCAL_EXTRACTION_DIR}/
