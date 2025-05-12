@@ -71,7 +71,9 @@ set(CORE_ENGINE_FILES ${CORE_ENGINE_FILES} ${DISPLINELIB}
         initialize_exp_database.c
         exp_configure.h
         common.h
-        common.c)
+        common.c
+        search_exp_route.c
+        search_exp_route.h)
 
 # Build 対象のプログラムを指定
 add_executable(core_engine_debugger main.c ${CORE_ENGINE_FILES})
