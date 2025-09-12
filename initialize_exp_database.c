@@ -245,14 +245,13 @@ void terminate_databases_handler(ExpDiaDBHandler h_dia_db, ExpDataHandler h_knb_
 /**
  * @brief   取得した各種ハンドラの動作確認
  * @param   ExpDataHandler* : KNB データハンドラのポインタ
- * @param   ExpDiaDBHandler* : DIA DB ハンドラのポインタ
  * @return  none
  *
  * @copyright   val lab corp.
  * @author      shiohata
  * @data        2025-03-28  新規作成
  */
-void check_exp_initialize(ExpDataHandler* h_knb_data, ExpDiaDBHandler* h_dia_db) {
+void check_exp_initialize(ExpDataHandler* h_knb_data) {
     char sz_message[1024];
     memset(sz_message, '\0', sizeof(sz_message));
     sprintf(sz_message, "Data Version is ...\nKNB Version\t\t\t\t: %d\nDia DB Version\t\t\t: %d\nJR Timetable Version\t: %d",

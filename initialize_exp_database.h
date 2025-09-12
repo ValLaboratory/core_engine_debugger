@@ -39,4 +39,4 @@ void delete_entry_list(struct ExpEntryList st_entry_list);
 void terminate_databases_handler(ExpDiaDBHandler h_dia_db, ExpDataHandler h_knb_data);
 
 /* 動作確認 */
-void check_exp_initialize(ExpDataHandler* h_knb_data, ExpDiaDBHandler* h_dia_db);
+void check_exp_initialize(ExpDataHandler* h_knb_data);
