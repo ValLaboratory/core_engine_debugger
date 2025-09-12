@@ -44,7 +44,7 @@ int main(void) {
 
     if(initialize_exp_database(&h_knb_data, &h_dia_db, EXP_TRUE) == EXP_SUCCESS) {
         /* 確認 */
-        check_exp_initialize(&h_knb_data, &h_dia_db);
+        check_exp_initialize(&h_knb_data);
     }
     else {
         stdout_message("ERROR", "failed to initialize exp databases.");
