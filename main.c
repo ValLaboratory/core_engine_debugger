@@ -63,14 +63,14 @@ int main(void) {
         // 平均経路探索を実行
         ExpRouteResHandler h_result_route = NULL;
 
-#ifdef DEBUG_SIMPLE     // 平均経路探索
-        /* 経路検索に利用する交通手段を設定 */
         // 利用交通機関を初期化
         ExpDiaVehicles exp_dia_vehicles;
         ExpDiaVehicles_Clear(&exp_dia_vehicles, EXP_TRUE);
         ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_AIR, EXP_FALSE, &exp_dia_vehicles);       // 航空機を除く
         ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_ROUTEBUS, EXP_FALSE, &exp_dia_vehicles);  // 路線バスを除く
 
+#ifdef DEBUG_SIMPLE     // 平均経路探索
+        /* 経路検索に利用する交通手段を設定 */
         // 品川：22709, 高円寺:22671
         h_result_route = search_simple_average_route(
                 h_exp_navi,
@@ -80,19 +80,13 @@ int main(void) {
                 &exp_dia_vehicles
                 );
 #else   // ダイヤ経路探索
-        /* 経路検索に利用する交通手段を設定 */
-        // 利用交通機関を初期化
-        ExpDiaVehicles exp_dia_vehicles;
-        ExpDiaVehicles_Clear(&exp_dia_vehicles, EXP_TRUE);
-        ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_AIR, EXP_FALSE, &exp_dia_vehicles);       // 航空機を除く
-
         h_result_route = search_simple_time_search(
                 h_exp_navi,
-                874407, // 探索の出発駅
-                29594, // 探索の到着駅
-                0, // 探索モード  0:出発時刻探索　1:到着時刻探索
-                20250603, // 探索日付
-                585, // 探索時刻(分) 例：08時15分 > 8*60+15
+                874407,     // 探索の出発駅
+                29594,      // 探索の到着駅
+                0,          // 探索モード  0:出発時刻探索　1:到着時刻探索
+                20250603,   // 探索日付
+                585,        // 探索時刻(分) 例：08時15分 > 8*60+15
                 &exp_dia_vehicles
                 );
 #endif
