@@ -10,6 +10,7 @@
 /* core_engine 定義ヘッダー */
 #include "ExpType.h"
 #include "ExpPublic.h"
+#include "Dia_SectionClass.h"
 
 /* Debugger 用のヘッダーファイル */
 #include "common.h"
@@ -52,6 +53,14 @@ int main(void) {
     }
 
     stdout_message("INFO", "database initialized finished.");
+
+    // ExpDiaLib のデバッグコード
+    // ※不要ならば削除
+    stdout_message("DEBUG", "debug to 'ExpDiaLib' functions...");
+    ExpChar* str = ExpDiaDB_SectionPatternClass_GetPageTitle(h_dia_db, 101);
+    char *res_str;
+    convert_sjis2utf8(str, res_str);
+    stdout_message("DEBUG", res_str);
 
     stdout_message("INFO", "==================== start to search average route.");
     // 平均経路探索テスト

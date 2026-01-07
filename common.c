@@ -40,7 +40,7 @@ void convert_sjis2utf8(char* sz_src, char* sz_dst) {
         stdout_message("ERROR", "failed to initialize iconv.");
         return;
     }
-    
+
     char*   sz_src_buf  = sz_src;
     char*   sz_dst_buf  = sz_dst;
     size_t  src_size    = (size_t)MAX_BUFFER_SIZE;
