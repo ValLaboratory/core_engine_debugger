@@ -40,14 +40,12 @@ void convert_sjis2utf8(char* sz_src, char* sz_dst) {
         stdout_message("ERROR", "failed to initialize iconv.");
         return;
     }
-
+    
     char*   sz_src_buf  = sz_src;
     char*   sz_dst_buf  = sz_dst;
     size_t  src_size    = (size_t)MAX_BUFFER_SIZE;
     size_t  dst_size    = (size_t)MAX_BUFFER_SIZE;
-    if(iconv(ic, &sz_src_buf, &src_size, &sz_dst_buf, &dst_size) == -1) {
-        stdout_message("ERROR", "failed to convert strings.");
-        return;
-    }
+    iconv(ic, &sz_src_buf, &src_size, &sz_dst_buf, &dst_size);
+
     iconv_close(ic);
 }
