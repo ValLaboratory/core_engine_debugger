@@ -57,10 +57,39 @@ int main(void) {
     // ExpDiaLib のデバッグコード
     // ※不要ならば削除
     stdout_message("DEBUG", "debug to 'ExpDiaLib' functions...");
-    ExpChar* str = ExpDiaDB_SectionPatternClass_GetPageTitle(h_dia_db, 101);
-    char *res_str;
-    convert_sjis2utf8(str, res_str);
-    stdout_message("DEBUG", res_str);
+    /*int cnt = ExpDiaDB_SectionClass_GetCount(h_dia_db);
+    for(int i = 0; i <= cnt; i++) {
+        if(!ExpDiaDB_SectionClass_IsValidCode(h_dia_db, i)) {
+            printf("%d,\n", i);
+            continue;
+        }
+
+        ExpChar*    sz_name = ExpDiaDB_SectionClass_GetName(h_dia_db, i);
+        ExpChar     sz_result[1024];
+        convert_sjis2utf8(sz_name, sz_result);
+        printf("%d,%s\n", i, sz_result);*/
+
+
+    for(int i = 0; i <= 3000; i++) {
+        //if(!ExpDiaDB_NicknameClass_IsValidCode(h_dia_db, i)) {
+        if(!ExpDiaDB_SectionPatternClass_IsValidCode(h_dia_db, i)) {
+            printf("%d,,\n", i);
+            continue;
+        }
+
+        //ExpChar*    sz_name = ExpDiaDB_NicknameClass_GetName(h_dia_db, i);
+        ExpChar*    sz_name         = ExpDiaDB_SectionPatternClass_GetName(h_dia_db, i);
+        ExpChar*    sz_pate_title   = ExpDiaDB_SectionPatternClass_GetPageTitle(h_dia_db, i);
+        ExpChar     sz_res1[1024];
+        ExpChar     sz_res2[1024];
+        //convert_sjis2utf8(sz_name, sz_result);
+        convert_sjis2utf8(sz_name, sz_res1);
+        convert_sjis2utf8(sz_pate_title, sz_res2);
+        //printf("%d,%s\n", i, sz_result);
+        //printf("%d,%s,%s\n", i, sz_res1, sz_res2);
+        printf("%d,%s,%s\n", i, sz_res1, sz_res2);
+    }
+
 
     stdout_message("INFO", "==================== start to search average route.");
     // 平均経路探索テスト
