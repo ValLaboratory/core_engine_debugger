@@ -9,9 +9,9 @@ TARGET_TYPE="all"
 
 # データの版
 # ※注意：Github のbranch に合わせること
-DATA_YEAR="2025"
-DATA_MONTH="06"
-DATA_EDITION="01"
+DATA_YEAR="2026"
+DATA_MONTH="02"
+DATA_EDITION="02"
 DATA_ZIP="ekispert-data.zip"
 
 # ローカルでの展開ディレクトリ

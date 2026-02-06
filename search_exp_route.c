@@ -2,16 +2,15 @@
 
 /**
  * @brief   平均経路探索
- * @param   ExpNaviHandler :
- * @param   ExpInt32 : 出発駅コード (外部駅コード)
- * @param   ExpInt32 : 到着駅コード (外部駅コード)
- * @param   ExpDate : 検索開始日付
+ * @param   ExpNaviHandler
+ * @param   ExpInt32*       : 外部駅コードの配列のポインタ
+ * @param   ExpInt16        : 駅コードの配列のバッファサイズ
+ * @param   ExpDate         : 検索開始日付
  * @param   ExpDiaVehicles* : 利用交通機関の種別フラグのポインタ
  * @return
  */
-ExpRouteResHandler search_simple_average_route(ExpNaviHandler h_exp_navi, ExpInt32 n_from_st_id, ExpInt32 n_to_st_id, ExpDate n_date, ExpDiaVehicles* p_exp_vehicles) {
+ExpRouteResHandler search_simple_average_route(ExpNaviHandler h_exp_navi, const ExpInt32* p_eki_code, ExpInt16 n_buf_size, ExpDate n_date, ExpDiaVehicles* p_exp_vehicles) {
     ExpDataHandler  h_exp_data;
-    ExpStationCode  st_exp_from_sta_code, st_exp_to_sta_code;
 
     // データ操作ハンドラを取得
     h_exp_data = ExpNavi_GetDataHandler(h_exp_navi);
@@ -19,17 +18,25 @@ ExpRouteResHandler search_simple_average_route(ExpNaviHandler h_exp_navi, ExpInt
         return NULL;
     }
 
-    // 外部駅コードから内部駅コードを取得
-    ExpStation_SetFromID(h_exp_data, n_from_st_id, &st_exp_from_sta_code);    // 出発駅
-    ExpStation_SetFromID(h_exp_data, n_to_st_id, &st_exp_to_sta_code);        // 到着駅
+    // naviHandler へのエントリーをクリア
+    ExpNavi_ClearEntries(h_exp_navi);
+
+    int n_eki_code_cnt = n_buf_size / sizeof(p_eki_code[0]);
+    for(int i = 0; i < n_eki_code_cnt; i++) {
+        char    msg[128];
+        sprintf(msg, "[%02d]: eki code -> %d", (i + 1), p_eki_code[i]);
+        stdout_message("DEBUG", msg);
+
+        // 外部駅コードから内部駅コードへ変換
+        ExpStationCode st_internal_eki_code;
+        ExpStation_SetFromID(h_exp_data, p_eki_code[i], &st_internal_eki_code);
+
+        // 内部駅コードを出発地から経由地、到着地までを順番に設定
+        ExpNavi_SetStationEntry(h_exp_navi, (ExpInt16)(i + 1), &st_internal_eki_code);
+    }
 
     // 経路検索の日付を設定
     ExpNavi_SetDepartureDate(h_exp_navi, n_date);
-
-    // 経路探索の情報を設定
-    ExpNavi_ClearEntries(h_exp_navi);   // お作法的に
-    ExpNavi_SetStationEntry(h_exp_navi, 1, &st_exp_from_sta_code);
-    ExpNavi_SetStationEntry(h_exp_navi, 2, &st_exp_to_sta_code);
 
     return ExpRoute_Search2(h_exp_navi, p_exp_vehicles);
 }
@@ -37,30 +44,37 @@ ExpRouteResHandler search_simple_average_route(ExpNaviHandler h_exp_navi, ExpInt
 /**
  * @brief   ダイヤ経路検索
  * @param   ExpNaviHandler
- * @param   ExpInt32 : 出発駅コード (外部駅コード)
- * @param   ExpInt32 : 到着駅コード (外部駅コード)
- * @param   ExpInt16 : 経路探索開始時刻切り替えモード　(0:出発時刻, 1:到着時刻)
- * @param   ExpDate : 経路検索開始日付
- * @param   ExpUnt16 : 経路検索開始時刻
+ * @param   ExpInt16*       : 外部駅コードの配列のポインタ
+ * @param   ExpInt16        : 駅コードの配列のバッファサイズ
+ * @param   ExpInt16        : 経路探索開始時刻切り替えモード　(0:出発時刻, 1:到着時刻)
+ * @param   ExpDate         : 経路検索開始日付
+ * @param   ExpUnt16        : 経路検索開始時刻
  * @param   ExpDiaVehicles* : 利用交通機関の種別フラグのポインタ
  * @return
  */
-ExpRouteResHandler search_simple_time_search(ExpNaviHandler h_exp_navi, ExpInt32 n_from_st_id, ExpInt32 n_to_st_id, ExpInt16 n_mode, ExpDate n_date, ExpInt16 n_time, ExpDiaVehicles* p_exp_vehicles) {
+ExpRouteResHandler search_simple_time_search(ExpNaviHandler h_exp_navi, const ExpInt32* p_eki_code, ExpInt16 n_buf_size, ExpInt16 n_mode, ExpDate n_date, ExpInt16 n_time, ExpDiaVehicles* p_exp_vehicles) {
     ExpDataHandler h_exp_data;
     h_exp_data = ExpNavi_GetDataHandler(h_exp_navi);
     if(h_exp_navi == NULL) {
         return NULL;
     }
 
-    // 外部駅コードから内部駅コードを取得
-    ExpStationCode st_exp_from_sta_code, st_exp_to_sta_code;
-    ExpStation_SetFromID(h_exp_data, n_from_st_id, &st_exp_from_sta_code);    // 出発駅
-    ExpStation_SetFromID(h_exp_data, n_to_st_id, &st_exp_to_sta_code);        // 到着駅
+    // naviHandler へのエントリーをクリア
+    ExpNavi_ClearEntries(h_exp_navi);
 
-    // 経路探索の情報を設定
-    ExpNavi_ClearEntries(h_exp_navi);   // お作法的に
-    ExpNavi_SetStationEntry(h_exp_navi, 1, &st_exp_from_sta_code);
-    ExpNavi_SetStationEntry(h_exp_navi, 2, &st_exp_to_sta_code);
+    ExpInt16 n_eki_code_cnt = n_buf_size / sizeof(ExpInt32);
+    for(int i = 0; i < n_eki_code_cnt; i++) {
+        char    msg[128];
+        sprintf(msg, "[%02d]: eki code -> %d", (i + 1), p_eki_code[i]);
+        stdout_message("DEBUG", msg);
+
+        // 外部駅コードから内部駅コードへ変換
+        ExpStationCode st_internal_eki_code;
+        ExpStation_SetFromID(h_exp_data, p_eki_code[i], &st_internal_eki_code);
+
+        // 内部駅コードを出発地から経由地、到着地までを順番に設定
+        ExpNavi_SetStationEntry(h_exp_navi, (ExpInt16)(i + 1), &st_internal_eki_code);
+    }
 
     return ExpRoute_DiaSearch(
                 h_exp_navi,

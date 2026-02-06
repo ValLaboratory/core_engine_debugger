@@ -20,7 +20,6 @@
 /* 定数宣言 */
 #define TRUE            EXP_TRUE
 #define FALSE           EXP_FALSE
-#define DEBUG_SIMPLE    FALSE       // 経路探索の切り替えフラグ 0:ダイヤ探索, 1:平均探索
 
 /* グローバル変数 */
 ExpDataHandler      h_knb_data;
@@ -56,7 +55,7 @@ int main(void) {
 
     // ExpDiaLib のデバッグコード
     // ※不要ならば削除
-    stdout_message("DEBUG", "debug to 'ExpDiaLib' functions...");
+    //stdout_message("DEBUG", "debug to 'ExpDiaLib' functions...");
     /*int cnt = ExpDiaDB_SectionClass_GetCount(h_dia_db);
     for(int i = 0; i <= cnt; i++) {
         if(!ExpDiaDB_SectionClass_IsValidCode(h_dia_db, i)) {
@@ -67,17 +66,19 @@ int main(void) {
         ExpChar*    sz_name = ExpDiaDB_SectionClass_GetName(h_dia_db, i);
         ExpChar     sz_result[1024];
         convert_sjis2utf8(sz_name, sz_result);
-        printf("%d,%s\n", i, sz_result);*/
+        printf("%d,%s\n", i, sz_result);
+        */
 
 
-    for(int i = 0; i <= 3000; i++) {
+    /*for(int i = 0; i <= 3000; i++) {
         //if(!ExpDiaDB_NicknameClass_IsValidCode(h_dia_db, i)) {
         if(!ExpDiaDB_SectionPatternClass_IsValidCode(h_dia_db, i)) {
-            printf("%d,,\n", i);
+            printf("%d,\n", i);
             continue;
         }
 
         //ExpChar*    sz_name = ExpDiaDB_NicknameClass_GetName(h_dia_db, i);
+        //ExpChar*    sz_result[1024];
         ExpChar*    sz_name         = ExpDiaDB_SectionPatternClass_GetName(h_dia_db, i);
         ExpChar*    sz_pate_title   = ExpDiaDB_SectionPatternClass_GetPageTitle(h_dia_db, i);
         ExpChar     sz_res1[1024];
@@ -86,12 +87,11 @@ int main(void) {
         convert_sjis2utf8(sz_name, sz_res1);
         convert_sjis2utf8(sz_pate_title, sz_res2);
         //printf("%d,%s\n", i, sz_result);
-        //printf("%d,%s,%s\n", i, sz_res1, sz_res2);
         printf("%d,%s,%s\n", i, sz_res1, sz_res2);
-    }
+    }*/
 
 
-    stdout_message("INFO", "==================== start to search average route.");
+    stdout_message("INFO", "==================== start to search route.\n");
     // 平均経路探索テスト
     /* ExpNaviHandler を生成 */
     ExpNaviHandler  *h_exp_navi = NULL;
@@ -105,26 +105,43 @@ int main(void) {
         ExpDiaVehicles exp_dia_vehicles;
         ExpDiaVehicles_Clear(&exp_dia_vehicles, EXP_TRUE);
         ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_AIR, EXP_FALSE, &exp_dia_vehicles);       // 航空機を除く
-        ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_ROUTEBUS, EXP_FALSE, &exp_dia_vehicles);  // 路線バスを除く
+        //ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_ROUTEBUS, EXP_FALSE, &exp_dia_vehicles);  // 路線バスを除く
 
-#ifdef DEBUG_SIMPLE     // 平均経路探索
+        // 駅コードを設定
+        // 0: 出発駅 ... n: 到着駅
+        // ※経由地がある場合は0-n の間に設定すること
+        ExpDate     n_date = 20260314;
+        ExpInt16    n_time = (9 * 60) + 43;     // 時刻計算　([0 - 23] * 60) + min
+        ExpInt32    ar_eki_codes[] = {22709, 22671};
+        //ExpInt32 ar_eki_codes[] = {28903, 28904, 28818, 28865};
+
+#if 1     // 平均経路探索
         /* 経路検索に利用する交通手段を設定 */
         // 品川：22709, 高円寺:22671
         h_result_route = search_simple_average_route(
                 h_exp_navi,
-                22709,
-                22671,
-                20250411,
+                ar_eki_codes,
+                sizeof(ar_eki_codes),
+                n_date,
                 &exp_dia_vehicles
                 );
 #else   // ダイヤ経路探索
+        /**
+         * 宮崎駅     :28903
+         * 宮崎空港駅 :28904
+         * 南郷駅     :28865
+         * 出発日     :20260314
+         * 出発時刻   :0943 -> 540+43 = 583
+         */
         h_result_route = search_simple_time_search(
                 h_exp_navi,
-                874407,     // 探索の出発駅
-                29594,      // 探索の到着駅
+                //28903,     // 探索の出発駅
+                //28865,      // 探索の到着駅
+                ar_eki_codes,
+                sizeof(ar_eki_codes),
                 0,          // 探索モード  0:出発時刻探索　1:到着時刻探索
-                20250603,   // 探索日付
-                585,        // 探索時刻(分) 例：08時15分 > 8*60+15
+                n_date,   // 探索日付
+                n_time,        // 探索時刻(分) 例：08時15分 > 8*60+15
                 &exp_dia_vehicles
                 );
 #endif
