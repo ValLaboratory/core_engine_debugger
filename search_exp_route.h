@@ -29,3 +29,10 @@ ExpRouteResHandler search_simple_time_search(
                                             // 例: 08時15分の場合, 8 * 60 + 15 = 495
             ExpDiaVehicles* p_exp_vehicles  // 各種乗り物設定
         );
+
+/* 経路探索結果からダイヤリストを表字 */
+void display_dia_list(
+            ExpRouteResHandler  h_result_route, // 経路探索結果の操作ハンドラー
+            ExpInt16            n_result_no,    // 経路探索結果の順序番号
+            ExpInt16            n_seq_no        // 経路結果の指定経路順序番号の区間番号
+        );

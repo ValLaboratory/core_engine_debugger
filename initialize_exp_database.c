@@ -243,7 +243,7 @@ void terminate_databases_handler(ExpDiaDBHandler h_dia_db, ExpDataHandler h_knb_
 }
 
 /**
- * @brief   取得した各種ハンドラの動作確認
+ * @brief   取得した各種データのバージョン確認
  * @param   ExpDataHandler* : KNB データハンドラのポインタ
  * @return  none
  *
@@ -254,9 +254,14 @@ void terminate_databases_handler(ExpDiaDBHandler h_dia_db, ExpDataHandler h_knb_
 void check_exp_initialize(ExpDataHandler* h_knb_data) {
     char sz_message[1024];
     memset(sz_message, '\0', sizeof(sz_message));
-    sprintf(sz_message, "Data Version is ...\nKNB Version\t\t\t\t: %d\nDia DB Version\t\t\t: %d\nJR Timetable Version\t: %d",
+    sprintf(sz_message, "Data Version is ...\nKNB Version\t\t\t\t: %d\nDia DB Version\t\t\t: %d (%d)\nJR Timetable Version\t: %d",
             (int) ExpDB_GetBaseDateVersion(*h_knb_data),
             (int) ExpDB_GetDiaEditionDateVersion(*h_knb_data),
+            (int) ExpDiaDB_GetInternalVersion(ExpDB_GetDiaDBHandler(*h_knb_data)),
             (int) ExpDB_GetJrTrainDiaDateVersion(*h_knb_data));
     stdout_message("INFO", sz_message);
 }
+
+/**
+ *
+ */
