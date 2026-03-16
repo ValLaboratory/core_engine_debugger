@@ -94,7 +94,7 @@ ExpRouteResHandler search_simple_time_search(ExpNaviHandler h_exp_navi, const Ex
  */
  void display_dia_list(ExpRouteResHandler h_result_route, ExpInt16 n_route_no, ExpInt16 n_rail_seq_no) {
     // 対象経路区間の運行日
-    ExpDate     n_drive_date    = ExpCRouteRPart_GetDriveDate(h_result_route, n_route_no, n_rail_seq_no);
+    ExpDate n_drive_date = ExpCRouteRPart_GetDriveDate(h_result_route, n_route_no, n_rail_seq_no);
 
     // 対象経路区間のダイヤリストを作成
     ExpDiaRailList st_dia_rail_list = ExpCRouteRPart_MakeDiaRailListFromStation(h_result_route, n_route_no, n_rail_seq_no, n_drive_date, 0);
