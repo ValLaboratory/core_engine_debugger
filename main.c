@@ -53,10 +53,11 @@ int main(void) {
 
     stdout_message("INFO", "database initialized finished.");
 
-    // ExpDiaLib のデバッグコード
-    // ※不要ならば削除
+// ExpDiaLib のデバッグコード
+// ※不要ならば削除
+#if 0
     //stdout_message("DEBUG", "debug to 'ExpDiaLib' functions...");
-    /*int cnt = ExpDiaDB_SectionClass_GetCount(h_dia_db);
+    int cnt = ExpDiaDB_SectionClass_GetCount(h_dia_db);
     for(int i = 0; i <= cnt; i++) {
         if(!ExpDiaDB_SectionClass_IsValidCode(h_dia_db, i)) {
             printf("%d,\n", i);
@@ -67,10 +68,8 @@ int main(void) {
         ExpChar     sz_result[1024];
         convert_sjis2utf8(sz_name, sz_result);
         printf("%d,%s\n", i, sz_result);
-        */
 
-
-    /*for(int i = 0; i <= 3000; i++) {
+    for(int i = 0; i <= 3000; i++) {
         //if(!ExpDiaDB_NicknameClass_IsValidCode(h_dia_db, i)) {
         if(!ExpDiaDB_SectionPatternClass_IsValidCode(h_dia_db, i)) {
             printf("%d,\n", i);
@@ -88,8 +87,8 @@ int main(void) {
         convert_sjis2utf8(sz_pate_title, sz_res2);
         //printf("%d,%s\n", i, sz_result);
         printf("%d,%s,%s\n", i, sz_res1, sz_res2);
-    }*/
-
+    }
+#endif
 
     stdout_message("INFO", "==================== start to search route.\n");
     // 平均経路探索テスト
@@ -104,20 +103,32 @@ int main(void) {
         // 利用交通機関を初期化
         ExpDiaVehicles exp_dia_vehicles;
         ExpDiaVehicles_Clear(&exp_dia_vehicles, EXP_TRUE);
-        ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_AIR, EXP_FALSE, &exp_dia_vehicles);       // 航空機を除く
-        //ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_ROUTEBUS, EXP_FALSE, &exp_dia_vehicles);  // 路線バスを除く
+        ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_AIR, EXP_FALSE, &exp_dia_vehicles);           // 航空機を除く
+        ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_ROUTEBUS, EXP_FALSE, &exp_dia_vehicles);      // 路線バスを除く
+        ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_HIGHWAYBUS, EXP_FALSE, &exp_dia_vehicles);    // 高速バスを除く
+        ExpDiaVehicles_SetTraffic(EXP_TRAFFIC_AIRBUS, EXP_FALSE, &exp_dia_vehicles);        // 連絡バスを除く
+
+        // 探索結果のソートに乗り換え回数を加える
+        ExpNavi_DSC_SetSelectionMode(h_exp_navi, 1, 0x0001);
+
+        // 探索結果の表示数を増やす
+#if 0
+        ExpInt16 n_res_max_count = 50;
+        ExpNavi_ResetMaxAnswerCount(h_exp_navi, n_res_max_count);
+        ExpNavi_SetAnswerCount(h_exp_navi, n_res_max_count);
+#endif
+
+        // 祝・休日フラグ
+        //print_date_holiday_factor(2026, 2026);
 
         // 駅コードを設定
         // 0: 出発駅 ... n: 到着駅
         // ※経由地がある場合は0-n の間に設定すること
-        ExpDate     n_date = 20260314;
-        ExpInt16    n_time = (9 * 60) + 43;     // 時刻計算　([0 - 23] * 60) + min
-        ExpInt32    ar_eki_codes[] = {22709, 22671};
-        //ExpInt32 ar_eki_codes[] = {28903, 28904, 28818, 28865};
+        ExpDate     n_date          = 20260606;         // 日時の設定
+        ExpInt16    n_time          = (9 * 60) + 10;    // 時刻計算　([0 - 23] * 60) + min
+        ExpInt32    ar_eki_codes[]  = {22640, 22865}; // 錦糸町: 22640, 西大井: 22865
 
-#if 1     // 平均経路探索
-        /* 経路検索に利用する交通手段を設定 */
-        // 品川：22709, 高円寺:22671
+#if 0     // 平均経路探索
         h_result_route = search_simple_average_route(
                 h_exp_navi,
                 ar_eki_codes,
@@ -126,22 +137,13 @@ int main(void) {
                 &exp_dia_vehicles
                 );
 #else   // ダイヤ経路探索
-        /**
-         * 宮崎駅     :28903
-         * 宮崎空港駅 :28904
-         * 南郷駅     :28865
-         * 出発日     :20260314
-         * 出発時刻   :0943 -> 540+43 = 583
-         */
         h_result_route = search_simple_time_search(
                 h_exp_navi,
-                //28903,     // 探索の出発駅
-                //28865,      // 探索の到着駅
                 ar_eki_codes,
                 sizeof(ar_eki_codes),
                 0,          // 探索モード  0:出発時刻探索　1:到着時刻探索
-                n_date,   // 探索日付
-                n_time,        // 探索時刻(分) 例：08時15分 > 8*60+15
+                n_date,     // 探索日付
+                n_time,     // 探索時刻(分) 例：08時15分 > 8*60+15
                 &exp_dia_vehicles
                 );
 #endif
@@ -154,6 +156,13 @@ int main(void) {
                     h_result_route,
                     0,
                     NULL);
+
+// ダイヤのリスト表示
+#if 0
+            // 第一経路のダイヤリストを表示
+            display_dia_list(h_result_route, 1, 1);
+#endif
+            // 後始末
             ExpRoute_Delete(h_result_route);
         }
         else {
